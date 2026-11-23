@@ -127,13 +127,11 @@
                                     <a href="{{ route('jadwal.edit', $jadwal['kode']) }}" class="font-medium text-slate-600 hover:text-slate-900">
                                         Edit
                                     </a>
-                                    <form action="{{ route('jadwal.destroy', $jadwal['kode']) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="font-medium text-rose-600 hover:text-rose-800">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            onclick="openDeleteModal('{{ $jadwal['kode'] }}', '{{ addslashes($jadwal['mata_kuliah']) }}', '{{ $jadwal['dosen'] }}', '{{ route('jadwal.destroy', $jadwal['kode']) }}')"
+                                            class="font-medium text-rose-600 hover:text-rose-800 transition-colors cursor-pointer">
+                                        Hapus
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -142,4 +140,60 @@
             </div>
         </div>
     @endif
+
+    <!-- DaisyUI Delete Confirmation Modal -->
+    <dialog id="delete_modal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box bg-white text-slate-800 rounded-3xl border border-slate-200 shadow-2xl p-6 sm:max-w-md">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg text-slate-900">Hapus Jadwal Kuliah</h3>
+                    <p class="text-xs text-slate-500 mt-1">
+                        Apakah Anda yakin ingin menghapus data perkuliahan ini dari sistem?
+                    </p>
+                </div>
+            </div>
+
+            <div class="my-5 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Mata Kuliah</span>
+                    <span id="modal_kode_badge" class="px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 font-mono font-bold text-[11px]">TI033015</span>
+                </div>
+                <p id="modal_matkul_name" class="font-bold text-slate-900 text-sm mt-0.5"></p>
+                <p id="modal_dosen_name" class="text-slate-600 text-[11px] mt-1"></p>
+            </div>
+
+            <div class="modal-action flex items-center justify-end gap-2 pt-2">
+                <form method="dialog">
+                    <button class="btn btn-ghost btn-sm rounded-xl text-slate-600 hover:bg-slate-100 font-medium normal-case">
+                        Batal
+                    </button>
+                </form>
+                <form id="delete_form_target" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-error btn-sm rounded-xl text-white font-medium normal-case shadow-md shadow-rose-200">
+                        Ya, Hapus Jadwal
+                    </button>
+                </form>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop bg-slate-900/40 backdrop-blur-xs">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <script>
+        function openDeleteModal(kode, matkul, dosen, destroyUrl) {
+            document.getElementById('modal_kode_badge').innerText = kode;
+            document.getElementById('modal_matkul_name').innerText = matkul;
+            document.getElementById('modal_dosen_name').innerText = 'Dosen: ' + dosen;
+            document.getElementById('delete_form_target').action = destroyUrl;
+            document.getElementById('delete_modal').showModal();
+        }
+    </script>
 @endsection
