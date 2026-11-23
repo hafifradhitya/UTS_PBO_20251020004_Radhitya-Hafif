@@ -9,3 +9,13 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Enforce high-contrast dark text and clean white background on form controls */
+input, select, textarea {
+    color: #0f172a !important; /* text-slate-900 */
+    background-color: #ffffff !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #94a3b8 !important; /* text-slate-400 */
+}
