@@ -6,9 +6,138 @@ use Illuminate\Http\Request;
 
 class JadwalController extends Controller
 {
+    /**
+     * 8 Data Mata Kuliah Resmi Mahasiswa UCIC Semester 3
+     */
+    public static function defaultJadwals(): array
+    {
+        return [
+            'TI033040' => [
+                'kode' => 'TI033040',
+                'mata_kuliah' => 'UI & UX Designer',
+                'dosen' => 'Rifqi Fahrudin, M.Kom.',
+                'hari' => 'Senin',
+                'jam_mulai' => '07:30',
+                'jam_selesai' => '09:30',
+                'ruangan' => 'Lab Multimedia',
+                'kelas' => 'TI-3A',
+                'sks' => 3,
+                'tipe' => 'Praktikum',
+                'status' => 'Aktif',
+            ],
+            'TI033034' => [
+                'kode' => 'TI033034',
+                'mata_kuliah' => 'Analisis dan Desain Perangkat Lunak',
+                'dosen' => 'Ridho Taufiq Subagio, M.Kom.',
+                'hari' => 'Senin',
+                'jam_mulai' => '12:30',
+                'jam_selesai' => '14:30',
+                'ruangan' => 'Ruang Teori 2',
+                'kelas' => 'TI-3A',
+                'sks' => 3,
+                'tipe' => 'Teori',
+                'status' => 'Aktif',
+            ],
+            'UC01032006' => [
+                'kode' => 'UC01032006',
+                'mata_kuliah' => 'English for Specific Purpose',
+                'dosen' => 'Mohammad Umar Fakhrudin, M.Pd.',
+                'hari' => 'Selasa',
+                'jam_mulai' => '07:30',
+                'jam_selesai' => '09:00',
+                'ruangan' => 'Ruang Teori 1',
+                'kelas' => 'TI-3A',
+                'sks' => 2,
+                'tipe' => 'Teori',
+                'status' => 'Aktif',
+            ],
+            'TI033015' => [
+                'kode' => 'TI033015',
+                'mata_kuliah' => 'Pemrograman Berorientasi Objek',
+                'dosen' => 'Hilman Lesmana, S.T., M.S.F.',
+                'hari' => 'Selasa',
+                'jam_mulai' => '09:30',
+                'jam_selesai' => '11:30',
+                'ruangan' => 'Lab 1',
+                'kelas' => 'TI-3A',
+                'sks' => 3,
+                'tipe' => 'Praktikum',
+                'status' => 'Aktif',
+            ],
+            'TI032053' => [
+                'kode' => 'TI032053',
+                'mata_kuliah' => 'Manajemen Data & Informasi',
+                'dosen' => 'Petrus Sokibi, M.Kom.',
+                'hari' => 'Rabu',
+                'jam_mulai' => '07:30',
+                'jam_selesai' => '09:00',
+                'ruangan' => 'Lab 2',
+                'kelas' => 'TI-3A',
+                'sks' => 2,
+                'tipe' => 'Teori',
+                'status' => 'Aktif',
+            ],
+            'TI033059' => [
+                'kode' => 'TI033059',
+                'mata_kuliah' => 'Teknik Multimedia Digital',
+                'dosen' => 'Dzulfiqar Fickri Rosyid, M.Ds.',
+                'hari' => 'Rabu',
+                'jam_mulai' => '14:30',
+                'jam_selesai' => '16:30',
+                'ruangan' => 'Lab Multimedia',
+                'kelas' => 'TI-3A',
+                'sks' => 3,
+                'tipe' => 'Praktikum',
+                'status' => 'Aktif',
+            ],
+            'TI032052' => [
+                'kode' => 'TI032052',
+                'mata_kuliah' => 'Statistik for Data Science',
+                'dosen' => 'Verina Tita Nabila, M.Si.',
+                'hari' => 'Kamis',
+                'jam_mulai' => '07:30',
+                'jam_selesai' => '09:00',
+                'ruangan' => 'Ruang Teori 3',
+                'kelas' => 'TI-3A',
+                'sks' => 2,
+                'tipe' => 'Teori',
+                'status' => 'Aktif',
+            ],
+            'TI033033' => [
+                'kode' => 'TI033033',
+                'mata_kuliah' => 'Administrasi Jaringan',
+                'dosen' => 'Unang Solihin, M.Kom.',
+                'hari' => 'Sabtu',
+                'jam_mulai' => '07:30',
+                'jam_selesai' => '09:30',
+                'ruangan' => 'Lab Jaringan',
+                'kelas' => 'TI-3A',
+                'sks' => 3,
+                'tipe' => 'Praktikum',
+                'status' => 'Aktif',
+            ],
+        ];
+    }
+
+    private function getJadwals(): array
+    {
+        if (!session()->exists('jadwals')) {
+            session()->put('jadwals', self::defaultJadwals());
+        }
+
+        return session()->get('jadwals', []);
+    }
+
+    public function resetJadwals()
+    {
+        session()->put('jadwals', self::defaultJadwals());
+
+        return redirect()->route('jadwal.index')->with('success', 'Jadwal perkuliahan berhasil dimuat ulang dengan 8 data resmi semester berjalan UCIC.');
+    }
+
     public function dashboard()
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
 
         $hariIni = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'][date('N') - 1];
 
@@ -48,7 +177,7 @@ class JadwalController extends Controller
 
     public function index(Request $request)
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
 
         $cari = $request->query('cari');
         $filterHari = $request->query('hari');
@@ -92,7 +221,7 @@ class JadwalController extends Controller
             'status' => 'required|in:Aktif,Dibatalkan,Selesai',
         ]);
 
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
 
         if (isset($jadwals[$validated['kode']])) {
             return back()->withInput()->with('error', 'Kode sudah digunakan. Gunakan kode lain.');
@@ -106,7 +235,7 @@ class JadwalController extends Controller
 
     public function show($kode)
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
 
         if (!isset($jadwals[$kode])) {
             return redirect()->route('jadwal.index')->with('error', 'Jadwal dengan kode tersebut tidak ditemukan.');
@@ -119,7 +248,7 @@ class JadwalController extends Controller
 
     public function edit($kode)
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
 
         if (!isset($jadwals[$kode])) {
             return redirect()->route('jadwal.index')->with('error', 'Jadwal dengan kode tersebut tidak ditemukan.');
@@ -132,7 +261,7 @@ class JadwalController extends Controller
 
     public function update(Request $request, $kode)
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
 
         if (!isset($jadwals[$kode])) {
             return redirect()->route('jadwal.index')->with('error', 'Jadwal dengan kode tersebut tidak ditemukan.');
@@ -160,7 +289,7 @@ class JadwalController extends Controller
 
     public function destroy($kode)
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
 
         if (!isset($jadwals[$kode])) {
             return redirect()->route('jadwal.index')->with('error', 'Jadwal dengan kode tersebut tidak ditemukan.');
@@ -174,7 +303,7 @@ class JadwalController extends Controller
 
     public function dosen()
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
         $dosenList = [];
         foreach ($jadwals as $j) {
             $nama = $j['dosen'];
@@ -196,7 +325,7 @@ class JadwalController extends Controller
 
     public function ruangan()
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
         $ruanganList = [];
         foreach ($jadwals as $j) {
             $ruang = $j['ruangan'];
@@ -216,7 +345,7 @@ class JadwalController extends Controller
 
     public function kelas()
     {
-        $jadwals = session()->get('jadwals', []);
+        $jadwals = $this->getJadwals();
         $kelasList = [];
         foreach ($jadwals as $j) {
             $k = $j['kelas'];

@@ -46,6 +46,22 @@ Aplikasi **JadwalkuApp-UTS** adalah sistem web berbasis **Laravel 13** yang diba
 | **Kategori** | `tipe` | `enum (Teori/Praktikum/Daring)` | Klasifikasi metode pembelajaran (kelanjutan dari tugas Pertemuan 7). |
 | **Kondisi** | `status` | `enum (Aktif/Dibatalkan/Selesai)` | Status operasional jadwal pada kalender akademik BAAK. |
 
+### 2.3. Dataset Jadwal Resmi Perkuliahan Mahasiswa (Portal Mahasiswa UCIC)
+Aplikasi secara langsung memuat 8 jadwal perkuliahan riil semester berjalan mahasiswa Universitas Catur Insan Cendekia (UCIC) sesuai data portal akademik mahasiswa ke dalam session storage:
+
+| No | Kode MK | Nama Mata Kuliah | Dosen Pengampu & Kontak | Hari & Waktu | Ruangan | SKS | Tipe | Status |
+| :-: | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :-: |
+| 1 | `TI033040` | UI & UX Designer | Rifqi Fahrudin, M.Kom. (082119976155) | Senin, 07:30 - 09:30 | Lab Multimedia | 3 | Praktikum | Aktif |
+| 2 | `TI033034` | Analisis dan Desain Perangkat Lunak | Ridho Taufiq Subagio, M.Kom. (ridho.taufiq@cic.ac.id) | Senin, 12:30 - 14:30 | Ruang Teori 2 | 3 | Teori | Aktif |
+| 3 | `UC01032006` | English for Specific Purpose | Mohammad Umar Fakhrudin, M.Pd. (mohammad.fakhurdin@cic.ac.id) | Selasa, 07:30 - 09:00 | Ruang Teori 1 | 2 | Teori | Aktif |
+| 4 | `TI033015` | Pemrograman Berorientasi Objek | Hilman Lesmana, S.T., M.S.F. (hilman.lesmana@cic.ac.id) | Selasa, 09:30 - 11:30 | Lab 1 | 3 | Praktikum | Aktif |
+| 5 | `TI032053` | Manajemen Data & Informasi | Petrus Sokibi, M.Kom. (petrus.sokibi@cic.ac.id) | Rabu, 07:30 - 09:00 | Lab 2 | 2 | Teori | Aktif |
+| 6 | `TI033059` | Teknik Multimedia Digital | Dzulfiqar Fickri Rosyid, M.Ds. (081220288442) | Rabu, 14:30 - 16:30 | Lab Multimedia | 3 | Praktikum | Aktif |
+| 7 | `TI032052` | Statistik for Data Science | Verina Tita Nabila, M.Si. (Verina.Nabila@cic.ac.id) | Kamis, 07:30 - 09:00 | Ruang Teori 3 | 2 | Teori | Aktif |
+| 8 | `TI033033` | Administrasi Jaringan | Unang Solihin, M.Kom. (08111757551) | Sabtu, 07:30 - 09:30 | Lab Jaringan | 3 | Praktikum | Aktif |
+
+*Catatan: Tombol **"Muat 8 Jadwal Resmi UCIC"** juga disediakan pada halaman `/jadwal` untuk mereset dan memulihkan kembali seluruh 8 jadwal resmi di atas kapan saja.*
+
 ---
 
 ## 3. DAFTAR ROUTE APLIKASI
