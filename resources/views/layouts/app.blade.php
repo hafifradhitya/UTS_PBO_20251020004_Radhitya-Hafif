@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,15 +115,15 @@
 
                 <!-- Topbar Actions & Profile -->
                 <div class="flex items-center gap-4">
-                    <!-- Notification Dropdown (DaisyUI Interactive) -->
-                    <div class="dropdown dropdown-end">
-                        <div tabindex="0" role="button" class="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors relative cursor-pointer" title="Notifikasi BAAK">
+                    <!-- Notification Dropdown (Pure Tailwind v4 Interactive) -->
+                    <div class="relative">
+                        <button type="button" id="notif-toggle-btn" onclick="document.getElementById('notif-menu').classList.toggle('hidden');" class="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors relative cursor-pointer" title="Notifikasi BAAK">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
                             <span id="notif-badge" class="w-2.5 h-2.5 rounded-full bg-rose-500 absolute top-1.5 right-1.5 ring-2 ring-white"></span>
-                        </div>
-                        <div tabindex="0" class="dropdown-content z-30 card card-compact w-80 p-0 shadow-2xl bg-white border border-slate-200 rounded-2xl mt-3">
+                        </button>
+                        <div id="notif-menu" class="hidden absolute right-0 mt-3 w-80 bg-white border border-slate-200 shadow-2xl rounded-2xl z-30 overflow-hidden">
                             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <span class="font-bold text-sm text-slate-800">Pemberitahuan BAAK</span>
@@ -221,9 +221,20 @@
             <!-- Footer -->
             <footer class="px-8 py-5 text-xs text-slate-400 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-2">
                 <p>UTS Pemrograman Berorientasi Objek — Sistem Pengelolaan Jadwal Perkuliahan Mahasiswa (BAAK UCIC)</p>
-                <p class="font-mono text-[11px]">Laravel 13 • DaisyUI • SESSION_DRIVER=file</p>
+                <p class="font-mono text-[11px]">Laravel 13 • Tailwind CSS v4 • SESSION_DRIVER=file</p>
             </footer>
         </div>
     </div>
+
+    <!-- Script Outside Click Dropdown Notifikasi -->
+    <script>
+        document.addEventListener('click', function(e) {
+            const btn = document.getElementById('notif-toggle-btn');
+            const menu = document.getElementById('notif-menu');
+            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>

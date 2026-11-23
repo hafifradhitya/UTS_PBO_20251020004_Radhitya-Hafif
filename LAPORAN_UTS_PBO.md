@@ -1,7 +1,7 @@
 # LAPORAN UJIAN TENGAH SEMESTER (UTS)
 ## PEMROGRAMAN BERORIENTASI OBJEK (TI033015)
 ### SISTEM PENGELOLAAN JADWAL PERKULIAHAN MAHASISWA (BAAK UCIC)
-#### DENGAN MODERN ACADEMIC CONTROL CENTER (LARAVEL 13 + DAISYUI + SESSION FILE)
+#### DENGAN MODERN ACADEMIC CONTROL CENTER (LARAVEL 13 + TAILWIND CSS V4 + SESSION FILE)
 
 ---
 
@@ -19,7 +19,7 @@
 ---
 
 ## 2. RINGKASAN APLIKASI
-Aplikasi **JadwalkuApp-UTS** adalah sistem web berbasis **Laravel 13** yang dibangun untuk memenuhi kebutuhan BAAK UCIC dalam mendata, memantau, memvalidasi, dan memperbarui jadwal perkuliahan secara dinamis. Proyek ini mengintegrasikan seluruh ketentuan spesifikasi UTS dan mengimprovisasi antarmuka bergaya **Modern Academic Control Center** menggunakan **DaisyUI** dan **Tailwind CSS v4** via Vite:
+Aplikasi **JadwalkuApp-UTS** adalah sistem web berbasis **Laravel 13** yang dibangun untuk memenuhi kebutuhan BAAK UCIC dalam mendata, memantau, memvalidasi, dan memperbarui jadwal perkuliahan secara dinamis. Proyek ini mengintegrasikan seluruh ketentuan spesifikasi UTS dan mengimprovisasi antarmuka bergaya **Modern Academic Control Center** menggunakan **Tailwind CSS v4** via Vite:
 1. **Peralihan Identitas Data:** Dari `id` integer numerik (Pertemuan 7) menjadi `kode` string unik (seperti `JDW001`, `JDW002`) yang langsung bertindak sebagai *associative key* dalam penyimpanan session.
 2. **Penyimpanan Session Mandiri:** Seluruh data operasional dikelola secara aman menggunakan driver session berbasis file internal (`SESSION_DRIVER=file`) tanpa ketergantungan server database MySQL atau Model Eloquent.
 3. **Pemisahan Perhatian (Route → Controller → Blade):**
@@ -106,7 +106,7 @@ Pengendali ini mengimplementasikan 7 method RESTful CRUD standar ditambah 1 meth
 Pengendali otentikasi ini menangani alur masuk dan keluar sesi administrator BAAK UCIC secara aman menggunakan penyimpanan session internal. Ketika pengguna mengirim kredensial melalui formulir login, method `login()` memvalidasi data dan menginisialisasi session `'is_logged_in'` beserta data profil admin, kemudian mengalihkan pengguna ke dashboard dengan pesan kilat sukses.
 
 ### 4. `resources/views/layouts/app.blade.php`
-Berkas layout induk ini mengadopsi struktur antarmuka modern yang terinspirasi dari control center enterprise dengan sidebar navigasi tetap di sebelah kiri, topbar dengan pencarian global dan info profil administrator, serta area konten utama responsif. Di dalamnya terintegrasi DaisyUI dan Tailwind CSS v4 via Vite `@vite`, serta komponen penangkap flash alert `session('success')` dan `session('error')`.
+Berkas layout induk ini mengadopsi struktur antarmuka modern yang terinspirasi dari control center enterprise dengan sidebar navigasi tetap di sebelah kiri, topbar dengan pencarian global dan info profil administrator, serta area konten utama responsif. Di dalamnya terintegrasi Tailwind CSS v4 via Vite `@vite`, serta komponen penangkap flash alert `session('success')` dan `session('error')`.
 
 ### 5. `resources/views/jadwal/dashboard.blade.php`
 Tampilan dashboard ini menyajikan 4 kartu metrik utama (Total Jadwal, Jadwal Aktif, Sesi Hari Berjalan, Beban SKS), diagram analitik visual distribusi jadwal mingguan dari Senin hingga Sabtu, serta diagram donut distribusi tipe sesi (Teori, Praktikum, Daring) yang dihitung secara dinamis dari session `$jadwals`. Seluruh angka terhubung langsung ke data session riil tanpa angka tiruan.

@@ -1,6 +1,6 @@
 # UTS PBO - Sistem Pengelolaan Jadwal Perkuliahan Mahasiswa (BAAK UCIC)
 
-Laravel 13 + SESSION_DRIVER=file + Tailwind CSS v4 & DaisyUI via Vite  
+Laravel 13 + SESSION_DRIVER=file + Tailwind CSS v4 via Vite  
 Lanjutan dari Tugas Pertemuan 7: https://github.com/hafifradhitya/tugas-pbo-pertemuan7
 
 ## Identitas Mahasiswa
