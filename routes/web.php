@@ -25,7 +25,7 @@ Route::match(['PUT', 'PATCH'], '/jadwal/{kode}', [JadwalController::class, 'upda
 Route::delete('/jadwal/{kode}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
 
 // Modul Ekstra Pendukung Akademik BAAK UCIC (Dosen, Ruangan, Kelas, Reset)
-Route::post('/jadwal/reset', [JadwalController::class, 'resetJadwals'])->name('jadwal.reset');
+Route::match(['GET', 'POST'], '/jadwal/reset', [JadwalController::class, 'resetJadwals'])->name('jadwal.reset');
 Route::get('/dosen', [JadwalController::class, 'dosen'])->name('jadwal.dosen');
 Route::get('/ruangan', [JadwalController::class, 'ruangan'])->name('jadwal.ruangan');
 Route::get('/kelas', [JadwalController::class, 'kelas'])->name('jadwal.kelas');

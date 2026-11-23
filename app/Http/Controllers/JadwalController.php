@@ -125,7 +125,15 @@ class JadwalController extends Controller
             session()->put('jadwals', self::defaultJadwals());
         }
 
-        return session()->get('jadwals', []);
+        $jadwals = session()->get('jadwals', []);
+
+        // Pada mode web non-testing, pastikan data UCIC termuat jika session masih berisi data dummy lama
+        if (!app()->environment('testing') && isset($jadwals['JDW001']) && !isset($jadwals['TI033040'])) {
+            $jadwals = self::defaultJadwals();
+            session()->put('jadwals', $jadwals);
+        }
+
+        return $jadwals;
     }
 
     public function resetJadwals()
