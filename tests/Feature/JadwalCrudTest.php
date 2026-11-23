@@ -208,4 +208,55 @@ class JadwalCrudTest extends TestCase
         $response->assertRedirect(route('jadwal.index'));
         $response->assertSessionHas('success', 'Jadwal berhasil dihapus.');
     }
+
+    public function test_login_page_loads_and_auth_works(): void
+    {
+        $response = $this->get(route('login'));
+        $response->assertStatus(200);
+        $response->assertSee('BAAK UCIC');
+
+        $loginPost = $this->post(route('login.post'), [
+            'email' => 'admin@ucic.ac.id',
+            'password' => 'admin123',
+        ]);
+        $loginPost->assertRedirect(route('jadwal.dashboard'));
+        $loginPost->assertSessionHas('is_logged_in', true);
+
+        $logoutPost = $this->post(route('logout'));
+        $logoutPost->assertRedirect(route('login'));
+    }
+
+    public function test_extra_academic_modules_load_successfully(): void
+    {
+        $sample = [
+            'JDW001' => [
+                'kode' => 'JDW001',
+                'mata_kuliah' => 'Pemrograman Berorientasi Objek',
+                'dosen' => 'Hilman Lesmana, S.T., M.S.F.',
+                'hari' => 'Senin',
+                'jam_mulai' => '08:00',
+                'jam_selesai' => '10:30',
+                'ruangan' => 'Lab 1',
+                'kelas' => 'TI-3A',
+                'sks' => 3,
+                'tipe' => 'Praktikum',
+                'status' => 'Aktif',
+            ],
+        ];
+
+        // Dosen module
+        $resDosen = $this->withSession(['jadwals' => $sample])->get(route('jadwal.dosen'));
+        $resDosen->assertStatus(200);
+        $resDosen->assertSee('Hilman Lesmana, S.T., M.S.F.');
+
+        // Ruangan module
+        $resRuang = $this->withSession(['jadwals' => $sample])->get(route('jadwal.ruangan'));
+        $resRuang->assertStatus(200);
+        $resRuang->assertSee('Lab 1');
+
+        // Kelas module
+        $resKelas = $this->withSession(['jadwals' => $sample])->get(route('jadwal.kelas'));
+        $resKelas->assertStatus(200);
+        $resKelas->assertSee('TI-3A');
+    }
 }

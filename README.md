@@ -1,6 +1,6 @@
 # UTS PBO - Sistem Pengelolaan Jadwal Perkuliahan Mahasiswa (BAAK UCIC)
 
-Laravel 13 + SESSION_DRIVER=file + Tailwind CSS v4 via Vite  
+Laravel 13 + SESSION_DRIVER=file + Tailwind CSS v4 & DaisyUI via Vite  
 Lanjutan dari Tugas Pertemuan 7: https://github.com/hafifradhitya/tugas-pbo-pertemuan7
 
 ## Identitas Mahasiswa
@@ -11,6 +11,24 @@ Lanjutan dari Tugas Pertemuan 7: https://github.com/hafifradhitya/tugas-pbo-pert
 - **Dosen Pengampu:** Hilman Lesmana, S.T., M.S.F.
 - **Institusi:** Universitas Catur Insan Cendekia (UCIC)
 
+## Fitur & Modul Sistem BAAK UCIC
+1. **Autentikasi Sesi BAAK:**
+   - Halaman Login & Logout berbasis session file murni tanpa DB (`/login`, `/logout`).
+   - Akun default: `admin@ucic.ac.id` / `admin123`.
+2. **Dashboard Kontrol Akademik (Inspirasi Modern Control Center):**
+   - 4 Kartu Metrik: Total Jadwal, Jadwal Aktif, Sesi Hari Berjalan, dan Beban SKS Terjadwal.
+   - Analitik Visual Distribusi Sesi Mingguan (Senin - Sabtu).
+   - Diagram Donut Distribusi Kategori Sesi (Teori, Praktikum, Daring).
+   - Agenda Perkuliahan Hari Ini.
+3. **Modul Inti CRUD Jadwal Kuliah (Sesuai Kontrak UTS):**
+   - 7 Method RESTful (`index, create, store, show, edit, update, destroy`) berurutan aman.
+   - Tabel 11 kolom lengkap + Filter pencarian, hari, dan tipe (GET).
+   - Kode unik string `JDW001` sebagai primary session key (`readonly` saat edit).
+4. **Modul Ekstra Pendukung Akademik Kampus:**
+   - **Direktori Dosen Pengampu (`/dosen`):** Agregasi beban mengajar dan mata kuliah per dosen.
+   - **Alokasi Ruangan & Lab (`/ruangan`):** Monitoring penggunaan lab komputer dan ruang teori.
+   - **Daftar Kelas Mahasiswa (`/kelas`):** Rombongan belajar TI dan beban SKS semesteran.
+
 ## Cara Menjalankan
 1. `composer install`
 2. `npm install`
@@ -20,6 +38,7 @@ Lanjutan dari Tugas Pertemuan 7: https://github.com/hafifradhitya/tugas-pbo-pert
 6. `npm run dev` (di terminal 1)
 7. `php artisan serve` (di terminal 2)
 8. Buka browser: `http://127.0.0.1:8000/dashboard` atau `http://127.0.0.1:8000/jadwal`
+
 
 ## Struktur File Utama
 - `routes/web.php` — 7 route CRUD + 1 route dashboard + redirect root

@@ -24,7 +24,26 @@ class JadwalController extends Controller
             'Daring' => count(array_filter($jadwals, fn ($j) => $j['tipe'] === 'Daring')),
         ];
 
-        return view('jadwal.dashboard', compact('jadwals', 'jadwalHariIni', 'hariIni', 'total', 'aktif', 'perTipe'));
+        $totalSks = array_sum(array_column($jadwals, 'sks'));
+        $distribusiHari = [
+            'Senin' => count(array_filter($jadwals, fn ($j) => $j['hari'] === 'Senin')),
+            'Selasa' => count(array_filter($jadwals, fn ($j) => $j['hari'] === 'Selasa')),
+            'Rabu' => count(array_filter($jadwals, fn ($j) => $j['hari'] === 'Rabu')),
+            'Kamis' => count(array_filter($jadwals, fn ($j) => $j['hari'] === 'Kamis')),
+            'Jumat' => count(array_filter($jadwals, fn ($j) => $j['hari'] === 'Jumat')),
+            'Sabtu' => count(array_filter($jadwals, fn ($j) => $j['hari'] === 'Sabtu')),
+        ];
+
+        return view('jadwal.dashboard', compact(
+            'jadwals',
+            'jadwalHariIni',
+            'hariIni',
+            'total',
+            'aktif',
+            'perTipe',
+            'totalSks',
+            'distribusiHari'
+        ));
     }
 
     public function index(Request $request)
@@ -151,5 +170,69 @@ class JadwalController extends Controller
         session()->put('jadwals', $jadwals);
 
         return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil dihapus.');
+    }
+
+    public function dosen()
+    {
+        $jadwals = session()->get('jadwals', []);
+        $dosenList = [];
+        foreach ($jadwals as $j) {
+            $nama = $j['dosen'];
+            if (!isset($dosenList[$nama])) {
+                $dosenList[$nama] = [
+                    'nama' => $nama,
+                    'total_matkul' => 0,
+                    'total_sks' => 0,
+                    'matkul' => [],
+                ];
+            }
+            $dosenList[$nama]['total_matkul']++;
+            $dosenList[$nama]['total_sks'] += (int) $j['sks'];
+            $dosenList[$nama]['matkul'][] = $j['mata_kuliah'] . ' (' . $j['kelas'] . ')';
+        }
+
+        return view('jadwal.dosen', compact('dosenList', 'jadwals'));
+    }
+
+    public function ruangan()
+    {
+        $jadwals = session()->get('jadwals', []);
+        $ruanganList = [];
+        foreach ($jadwals as $j) {
+            $ruang = $j['ruangan'];
+            if (!isset($ruanganList[$ruang])) {
+                $ruanganList[$ruang] = [
+                    'nama' => $ruang,
+                    'total_sesi' => 0,
+                    'jadwal' => [],
+                ];
+            }
+            $ruanganList[$ruang]['total_sesi']++;
+            $ruanganList[$ruang]['jadwal'][] = $j;
+        }
+
+        return view('jadwal.ruangan', compact('ruanganList', 'jadwals'));
+    }
+
+    public function kelas()
+    {
+        $jadwals = session()->get('jadwals', []);
+        $kelasList = [];
+        foreach ($jadwals as $j) {
+            $k = $j['kelas'];
+            if (!isset($kelasList[$k])) {
+                $kelasList[$k] = [
+                    'nama' => $k,
+                    'total_sks' => 0,
+                    'total_matkul' => 0,
+                    'jadwal' => [],
+                ];
+            }
+            $kelasList[$k]['total_sks'] += (int) $j['sks'];
+            $kelasList[$k]['total_matkul']++;
+            $kelasList[$k]['jadwal'][] = $j;
+        }
+
+        return view('jadwal.kelas', compact('kelasList', 'jadwals'));
     }
 }
