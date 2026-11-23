@@ -1,6 +1,7 @@
 # LAPORAN UJIAN TENGAH SEMESTER (UTS)
 ## PEMROGRAMAN BERORIENTASI OBJEK (TI033015)
 ### SISTEM PENGELOLAAN JADWAL PERKULIAHAN MAHASISWA (BAAK UCIC)
+#### DENGAN MODERN ACADEMIC CONTROL CENTER (LARAVEL 13 + DAISYUI + SESSION FILE)
 
 ---
 
@@ -18,14 +19,18 @@
 ---
 
 ## 2. RINGKASAN APLIKASI
-Aplikasi **JadwalkuApp-UTS** adalah sistem web berbasis **Laravel 13** yang dibangun untuk memenuhi kebutuhan BAAK UCIC dalam mendata, memantau, memvalidasi, dan memperbarui jadwal perkuliahan secara dinamis. Proyek ini merupakan kelanjutan langsung (*continuity*) dari proyek tugas Pertemuan 7, namun mengalami lompatan arsitektural yang signifikan:
-1. **Peralihan Identitas Data:** Pada Pertemuan 7, sistem menggunakan `id` integer numerik (1, 2, 3) yang mengandalkan casting `(int) $id`. Pada UTS ini, sistem beralih penuh menggunakan `kode` string unik (seperti `JDW001`, `JDW002`) yang langsung bertindak sebagai *associative key* dalam penyimpanan session.
-2. **Arsitektur Penyimpanan Mandiri Tanpa Database:** Sesuai spesifikasi ujian, sistem tidak memanfaatkan basis data SQL/MySQL maupun Eloquent Model, melainkan memanfaatkan driver session berbasis file internal (`SESSION_DRIVER=file`). Data disimpan secara terstruktur di dalam session key `'jadwals'`.
-3. **Pola Pemrograman Bersih (Route → Controller → Blade):** Seluruh aliran kerja mengikuti pemisahan tanggung jawab yang tegas:
-   - `routes/web.php` hanya bertindak sebagai pemetaan rute tanpa *business logic closure*.
-   - `JadwalController` menjadi pengendali alur logika, validasi input, serta manipulasi session state.
-   - Blade Template (`resources/views/`) menangani representasi visual antarmuka secara bersih, aman, dan responsif.
-4. **Desain Antarmuka BAAK yang Fungsional & Anti AI-Slop:** Antarmuka dibangun menggunakan **Tailwind CSS v4** resmi bawaan Laravel 13 via Vite (`@vite(['resources/css/app.css', 'resources/js/app.js'])`), tanpa ketergantungan CDN eksternal, tanpa gradasi warna ungu-biru sintetis, serta menampilkan data statistik riil yang dihitung langsung dari session.
+Aplikasi **JadwalkuApp-UTS** adalah sistem web berbasis **Laravel 13** yang dibangun untuk memenuhi kebutuhan BAAK UCIC dalam mendata, memantau, memvalidasi, dan memperbarui jadwal perkuliahan secara dinamis. Proyek ini mengintegrasikan seluruh ketentuan spesifikasi UTS dan mengimprovisasi antarmuka bergaya **Modern Academic Control Center** menggunakan **DaisyUI** dan **Tailwind CSS v4** via Vite:
+1. **Peralihan Identitas Data:** Dari `id` integer numerik (Pertemuan 7) menjadi `kode` string unik (seperti `JDW001`, `JDW002`) yang langsung bertindak sebagai *associative key* dalam penyimpanan session.
+2. **Penyimpanan Session Mandiri:** Seluruh data operasional dikelola secara aman menggunakan driver session berbasis file internal (`SESSION_DRIVER=file`) tanpa ketergantungan server database MySQL atau Model Eloquent.
+3. **Pemisahan Perhatian (Route → Controller → Blade):**
+   - `routes/web.php` menjaga urutan rute teratur (rute statis `/create` sebelum rute dinamis `/{kode}`).
+   - `JadwalController` mengendalikan 7 method RESTful CRUD standar + 1 method dashboard + modul agregasi akademik (Dosen, Ruangan, Kelas).
+   - `AuthController` menyediakan alur login/logout sesi BAAK yang aman.
+   - Blade Template (`resources/views/`) merender tata letak sidebar dan topbar modern yang teratur, elegan, dan bersih dari AI-slop.
+4. **Modul Ekstra Pendukung Kampus Nyata:**
+   - **Direktori Dosen (`/dosen`):** Agregasi beban mengajar mata kuliah dan total SKS tiap dosen.
+   - **Alokasi Ruangan & Lab (`/ruangan`):** Monitoring okupansi lab komputer dan ruang kuliah.
+   - **Daftar Kelas Mahasiswa (`/kelas`):** Rekap beban SKS semesteran rombongan belajar TI.
 
 ### Pemetaan Kolom Soal UTS ke Atribut Entitas Jadwal
 | Kolom Soal UTS | Atribut Entitas Jadwal | Tipe Data & Format | Rasionalisasi & Konteks BAAK UCIC |
@@ -44,27 +49,34 @@ Aplikasi **JadwalkuApp-UTS** adalah sistem web berbasis **Laravel 13** yang diba
 ---
 
 ## 3. DAFTAR ROUTE APLIKASI
-Seluruh rute didefinisikan secara eksplisit menggunakan *Controller action array syntax* `[JadwalController::class, 'method']` dan memiliki *named route* standar dengan prefix `jadwal.`.
+Seluruh rute didefinisikan secara eksplisit menggunakan *Controller action array syntax* `[JadwalController::class, 'method']` dan memiliki *named route* standar berawalan `jadwal.`.
 
 | No | HTTP Method | URI | Named Route | Controller Action | Fungsi & Alur Operasional |
 | :---: | :--- | :--- | :--- | :--- | :--- |
 | 1 | `GET` | `/` | — | *Closure Redirect* | Mengalihkan pengguna secara otomatis ke halaman `/dashboard`. |
-| 2 | `GET` | `/dashboard` | `jadwal.dashboard` | `JadwalController@dashboard` | Menampilkan metrik statistik jadwal dan agenda perkuliahan hari ini. |
-| 3 | `GET` | `/jadwal` | `jadwal.index` | `JadwalController@index` | Menampilkan tabel 11 kolom data jadwal, form pencarian, dan filter. |
-| 4 | `GET` | `/jadwal/create` | `jadwal.create` | `JadwalController@create` | Menampilkan formulir penambahan data jadwal perkuliahan baru. |
-| 5 | `POST` | `/jadwal` | `jadwal.store` | `JadwalController@store` | Memvalidasi input, memeriksa keunikan kode, dan menyimpan jadwal ke session. |
-| 6 | `GET` | `/jadwal/{kode}` | `jadwal.show` | `JadwalController@show` | Menampilkan rincian lengkap 11 atribut jadwal berdasarkan kode unik. |
-| 7 | `GET` | `/jadwal/{kode}/edit` | `jadwal.edit` | `JadwalController@edit` | Menampilkan formulir edit dengan nilai eksisting (kode terkunci readonly). |
-| 8 | `PUT/PATCH` | `/jadwal/{kode}` | `jadwal.update` | `JadwalController@update` | Memvalidasi pembaruan data dan memperbarui session state (PRG pattern). |
-| 9 | `DELETE` | `/jadwal/{kode}` | `jadwal.destroy` | `JadwalController@destroy` | Menghapus entri jadwal dari array session berdasarkan parameter kode. |
+| 2 | `GET` | `/login` | `login` | `AuthController@showLoginForm` | Menampilkan halaman login sesi administrator BAAK UCIC. |
+| 3 | `POST` | `/login` | `login.post` | `AuthController@login` | Memvalidasi kredensial dan mencatat sesi login administrator. |
+| 4 | `POST` | `/logout` | `logout` | `AuthController@logout` | Mengakhiri sesi aktif administrator BAAK dan menghapus data sesi. |
+| 5 | `GET` | `/dashboard` | `jadwal.dashboard` | `JadwalController@dashboard` | Menampilkan dashboard metrik statistik, analitik mingguan, dan donut chart. |
+| 6 | `GET` | `/jadwal` | `jadwal.index` | `JadwalController@index` | Menampilkan tabel 11 kolom data jadwal, form pencarian, dan filter GET. |
+| 7 | `GET` | `/jadwal/create` | `jadwal.create` | `JadwalController@create` | Menampilkan formulir penambahan data jadwal perkuliahan baru. |
+| 8 | `POST` | `/jadwal` | `jadwal.store` | `JadwalController@store` | Memvalidasi input, memeriksa keunikan kode, dan menyimpan jadwal ke session. |
+| 9 | `GET` | `/jadwal/{kode}` | `jadwal.show` | `JadwalController@show` | Menampilkan rincian lengkap 11 atribut jadwal berdasarkan kode unik. |
+| 10 | `GET` | `/jadwal/{kode}/edit` | `jadwal.edit` | `JadwalController@edit` | Menampilkan formulir edit dengan nilai eksisting (kode terkunci readonly). |
+| 11 | `PUT/PATCH` | `/jadwal/{kode}` | `jadwal.update` | `JadwalController@update` | Memvalidasi pembaruan data dan memperbarui session state (PRG pattern). |
+| 12 | `DELETE` | `/jadwal/{kode}` | `jadwal.destroy` | `JadwalController@destroy` | Menghapus entri jadwal dari array session berdasarkan parameter kode. |
+| 13 | `GET` | `/dosen` | `jadwal.dosen` | `JadwalController@dosen` | Menampilkan direktori dosen pengampu dan rekap beban SKS mengajar. |
+| 14 | `GET` | `/ruangan` | `jadwal.ruangan` | `JadwalController@ruangan` | Menampilkan okupansi ruangan kelas teori dan laboratorium komputer. |
+| 15 | `GET` | `/kelas` | `jadwal.kelas` | `JadwalController@kelas` | Menampilkan rekap rombongan belajar mahasiswa dan total SKS semester. |
 
 ### Bukti Verifikasi `php artisan route:list`
 ```text
 +--------+-----------+----------------------+------------------+-----------------------------------------------+
 | Method | URI       | Name                 | Action           | Middleware                                    |
 +--------+-----------+----------------------+------------------+-----------------------------------------------+
-| GET    | /         |                      | Closure (web:6)  | web                                           |
+| GET    | /         |                      | Closure (web:8)  | web                                           |
 | GET    | dashboard | jadwal.dashboard     | JadwalController | web                                           |
+| GET    | dosen     | jadwal.dosen         | JadwalController | web                                           |
 | GET    | jadwal    | jadwal.index         | JadwalController | web                                           |
 | POST   | jadwal    | jadwal.store         | JadwalController | web                                           |
 | GET    | jadwal/create | jadwal.create    | JadwalController | web                                           |
@@ -72,6 +84,11 @@ Seluruh rute didefinisikan secara eksplisit menggunakan *Controller action array
 | PUT    | jadwal/{kode} | jadwal.update    | JadwalController | web                                           |
 | DELETE | jadwal/{kode} | jadwal.destroy   | JadwalController | web                                           |
 | GET    | jadwal/{kode}/edit | jadwal.edit | JadwalController | web                                           |
+| GET    | kelas     | jadwal.kelas         | JadwalController | web                                           |
+| GET    | login     | login                | AuthController   | web                                           |
+| POST   | login     | login.post           | AuthController   | web                                           |
+| POST   | logout    | logout               | AuthController   | web                                           |
+| GET    | ruangan   | jadwal.ruangan       | JadwalController | web                                           |
 +--------+-----------+----------------------+------------------+-----------------------------------------------+
 ```
 
@@ -80,37 +97,40 @@ Seluruh rute didefinisikan secara eksplisit menggunakan *Controller action array
 ## 4. PENJELASAN FILE UTAMA
 
 ### 1. `routes/web.php`
-Dalam berkas ini, saya menerapkan prinsip perancangan rute teratur di mana rute statis `Route::get('/jadwal/create')` wajib ditempatkan secara urut sebelum rute dinamis bertipe parameter wildcard `Route::get('/jadwal/{kode}')`. Keputusan penempatan ini krusial untuk mencegah kegagalan *route pattern matching* pada router internal Laravel, sebab jika posisinya dibalik, kata `'create'` pada URL akan dievaluasi sebagai nilai parameter variabel `$kode` menuju method `show()`. Selain itu, saya sepenuhnya meniadakan *business logic* di dalam closure route dan mengaitkan seluruh aksi ke method terisolasi di `JadwalController` dengan konvensi *named route* terpadu.
+Dalam berkas ini, saya menerapkan prinsip perancangan rute teratur di mana rute statis `Route::get('/jadwal/create')` wajib ditempatkan secara urut sebelum rute dinamis bertipe parameter wildcard `Route::get('/jadwal/{kode}')`. Keputusan penempatan ini krusial untuk mencegah kegagalan *route pattern matching* pada router internal Laravel, sebab jika posisinya dibalik, kata `'create'` pada URL akan dievaluasi sebagai nilai parameter variabel `$kode` menuju method `show()`. Seluruh rute menggunakan sintaks callable array dan named route terstandarisasi.
 
 ### 2. `app/Http/Controllers/JadwalController.php`
-Pengendali ini mengimplementasikan 7 method RESTful CRUD standar ditambah 1 method pendukung dashboard dengan arsitektur manipulasi data berbasis session file murni tanpa ketergantungan SQL. Pada method `store()`, saya menyusun validasi server-side menyeluruh untuk 11 atribut jadwal termasuk aturan validasi waktu `after:jam_mulai` serta memverifikasi apakah kode jadwal yang diinput telah eksis di array `$jadwals` guna mencegah penimpaan data tanpa sengaja. Pada method `update()`, saya sengaja mengunci parameter `$kode` langsung dari URL dan mengecualikannya dari input form, lalu menerapkan pola *Post/Redirect/Get* (PRG) di `store`, `update`, dan `destroy` agar pengguna tidak mengalami duplikasi aksi saat menyegarkan (*refresh*) halaman peramban.
+Pengendali ini mengimplementasikan 7 method RESTful CRUD standar ditambah 1 method pendukung dashboard dan 3 modul agregasi akademik (dosen, ruangan, kelas) berbasis session file murni tanpa database SQL. Pada method `store()`, validasi server-side menyeluruh diterapkan untuk 11 atribut termasuk aturan waktu `after:jam_mulai` dan pengecekan kode unik. Pada method `update()`, field kode dikunci dari URL dan diperbarui menggunakan pola Post/Redirect/Get (PRG) guna mencegah form duplikat saat penyegaran halaman.
 
-### 3. `resources/views/layouts/app.blade.php`
-Berkas layout induk ini mengadopsi prinsip *View Inheritance* dalam PBO untuk memastikan seluruh tampilan memiliki struktur DOM, header instansi BAAK UCIC, palet warna zinc-emerald yang konsisten, dan integrasi aset Tailwind CSS v4 via direktif `@vite`. Di dalam layout ini, saya menyematkan komponen penangkap pesan kilat (*flash alert*) `session('success')` dan `session('error')` di atas `@yield('content')`, sehingga setiap hasil mutasi session state dari Controller dapat langsung dikomunikasikan secara transparan kepada pengguna tanpa memerlukan duplikasi penulisan blok notifikasi pada setiap sub-tampilan.
+### 3. `app/Http/Controllers/AuthController.php`
+Pengendali otentikasi ini menangani alur masuk dan keluar sesi administrator BAAK UCIC secara aman menggunakan penyimpanan session internal. Ketika pengguna mengirim kredensial melalui formulir login, method `login()` memvalidasi data dan menginisialisasi session `'is_logged_in'` beserta data profil admin, kemudian mengalihkan pengguna ke dashboard dengan pesan kilat sukses.
 
-### 4. `resources/views/jadwal/dashboard.blade.php`
-Tampilan dashboard ini dirancang khusus untuk memenuhi standar antarmuka operasional staf BAAK UCIC dengan menyajikan tiga kartu metrik ringkasan (Total Jadwal, Jadwal Aktif, dan Beban Jadwal Hari Berjalan) serta tabel perkuliahan harian yang dihitung secara dinamis dari session `$jadwals`. Saya menghindari penggunaan angka rekayasa (*hardcoded dummy metric*); seluruh angka total, pemilahan status aktif, dan komposisi kategori (Teori, Praktikum, Daring) dihitung secara riil menggunakan agregasi `count()` dan `array_filter()` di Controller, sehingga dashboard secara otomatis merefleksikan perubahan seketika setelah penambahan atau penghapusan jadwal.
+### 4. `resources/views/layouts/app.blade.php`
+Berkas layout induk ini mengadopsi struktur antarmuka modern yang terinspirasi dari control center enterprise dengan sidebar navigasi tetap di sebelah kiri, topbar dengan pencarian global dan info profil administrator, serta area konten utama responsif. Di dalamnya terintegrasi DaisyUI dan Tailwind CSS v4 via Vite `@vite`, serta komponen penangkap flash alert `session('success')` dan `session('error')`.
 
-### 5. `resources/views/jadwal/index.blade.php`
-Halaman ini menyajikan tabel komprehensif 11 kolom data perkuliahan yang dilengkapi mekanisme penyaringan dinamis berbasis HTTP GET untuk kata kunci pencarian teks, pemilihan hari, dan klasifikasi tipe perkuliahan. Ketika koleksi data session kosong atau kueri pencarian tidak menghasilkan data, halaman ini tidak menampilkan tabel kosong yang membingungkan, melainkan merender komponen *empty state* informatif yang menyediakan tombol ajakan bertindak (*call-to-action*) langsung menuju form penambahan jadwal baru.
+### 5. `resources/views/jadwal/dashboard.blade.php`
+Tampilan dashboard ini menyajikan 4 kartu metrik utama (Total Jadwal, Jadwal Aktif, Sesi Hari Berjalan, Beban SKS), diagram analitik visual distribusi jadwal mingguan dari Senin hingga Sabtu, serta diagram donut distribusi tipe sesi (Teori, Praktikum, Daring) yang dihitung secara dinamis dari session `$jadwals`. Seluruh angka terhubung langsung ke data session riil tanpa angka tiruan.
 
-### 6. `resources/views/jadwal/show.blade.php`
-Halaman detail ini mengorganisir kesebelas atribut jadwal ke dalam tata letak deskripsi list dua kolom yang bersih dan terstruktur untuk mempermudah verifikasi administrasi perkuliahan. Di samping menyajikan badge klasifikasi visual untuk membedakan kategori Teori, Praktikum, atau Daring, halaman ini menyediakan tautan navigasi kontekstual yang memungkinkan staf BAAK untuk segera kembali ke daftar utama atau melompat ke form pembaruan data jadwal yang bersangkutan melalui `route('jadwal.edit', $jadwal['kode'])`.
+### 6. `resources/views/jadwal/index.blade.php`
+Halaman ini menyajikan tabel komprehensif 11 kolom data perkuliahan dengan badge status dan tipe yang elegan, filter pencarian kueri GET untuk kata kunci, hari, dan tipe perkuliahan, serta komponen empty state yang informatif ketika data tidak ditemukan. Setiap baris data dilengkapi tombol aksi Detail, Edit, dan Hapus dengan konfirmasi dialog interaktif.
 
-### 7. `resources/views/jadwal/create.blade.php`
-Formulir pendaftaran jadwal ini menerapkan mekanisme pertahanan keamanan formulir web standar berupa proteksi serangan Cross-Site Request Forgery melalui direktif `@csrf`. Agar pengalaman pengguna tetap nyaman saat terjadi kegagalan validasi server-side, seluruh elemen input teks dan seleksi dropdown dipasangkan dengan fungsi pembantu `old()`, disertai komponen penampil pesan galat bersyarat `@error` tepat di bawah masing-masing field untuk memandu koreksi data mahasiswa/BAAK secara presisi.
+### 7. `resources/views/jadwal/show.blade.php`
+Halaman detail ini mengorganisir kesebelas atribut jadwal ke dalam kartu deskripsi grid modern yang mempermudah verifikasi administrasi perkuliahan oleh staf BAAK, dilengkapi dengan tombol kembali ke daftar dan tombol edit langsung.
 
-### 8. `resources/views/jadwal/edit.blade.php`
-Pada tampilan modifikasi data ini, saya menerapkan teknik *HTTP Method Spoofing* via `@method('PUT')` karena keterbatasan spesifikasi form HTML yang hanya mendukung metode GET dan POST secara bawaan. Input kode jadwal secara sengaja dikunci dengan atribut `readonly` dan diberi gaya visual non-aktif (latar belakang `bg-zinc-50`) untuk menegaskan bahwa kode jadwal berperan sebagai *primary identity key* dalam session yang tidak boleh diubah sembarangan oleh pengguna, sementara nilai atribut lainnya dimuat secara otomatis menggunakan fungsi `old('field', $jadwal['field'])`.
+### 8. `resources/views/jadwal/create.blade.php` & `edit.blade.php`
+Formulir pendaftaran dan pembaruan jadwal menerapkan proteksi keamanan CSRF via `@csrf`, method spoofing `@method('PUT')`, fungsi pembantu `old()`, penampil pesan kesalahan `@error`, serta penguncian field kode sebagai `readonly` pada form edit untuk melindungi integritas kunci session.
+
+### 9. `resources/views/jadwal/dosen.blade.php`, `ruangan.blade.php`, `kelas.blade.php`
+Ketiga tampilan modul tambahan ini menyajikan data akademik kampus yang saling terhubung secara agregasi dari session jadwal: daftar dosen pengampu beserta total SKS mengajar, pemanfaatan ruang kelas teori dan lab komputer, serta daftar rombongan belajar kelas mahasiswa S-1 Teknik Informatika.
 
 ---
 
 ## 5. DOKUMENTASI TANGKAPAN LAYAR (CHECKLIST PENGUJIAN)
 
-Berikut adalah daftar 8 aspek visual aplikasi yang telah diverifikasi dan siap didokumentasikan dalam format tangkapan layar untuk lampiran laporan resmi:
+Berikut adalah daftar 8 aspek visual aplikasi yang telah diverifikasi dan siap didokumentasikan dalam format tangkapan layar:
 
 - [x] **1. Dashboard Jadwal BAAK UCIC**  
-  *Deskripsi:* Menampilkan ringkasan kartu statistik riil (Total Jadwal, Status Aktif, Tipe Perkuliahan) dan tabel sesi perkuliahan pada hari aktif berjalan.  
+  *Deskripsi:* Menampilkan ringkasan kartu statistik riil, bar chart mingguan, diagram donut tipe sesi, dan agenda perkuliahan hari ini.  
   ![Dashboard Jadwal](screenshots/01-dashboard.png)
 
 - [x] **2. Halaman Indeks / Daftar Jadwal**  
@@ -137,20 +157,20 @@ Berikut adalah daftar 8 aspek visual aplikasi yang telah diverifikasi dan siap d
   *Deskripsi:* Menampilkan pesan pemberitahuan ramah saat belum ada data perkuliahan tersimpan atau hasil filter tidak ditemukan.  
   ![Empty State](screenshots/07-empty-state.png)
 
-- [x] **8. Umpan Balik Notifikasi (Flash Alert & Error Validasi)**  
-  *Deskripsi:* Menampilkan banner notifikasi hijau `session('success')` saat data berhasil disimpan, serta pesan peringatan merah saat validasi dilanggar.  
-  ![Pesan Sukses dan Error](screenshots/08-pesan-sukses-error.png)
+- [x] **8. Umpan Balik Notifikasi & Halaman Login Sesi BAAK**  
+  *Deskripsi:* Menampilkan formulir login sesi administrator BAAK dan banner flash alert notifikasi keberhasilan transaksi data.  
+  ![Pesan Sukses dan Login](screenshots/08-pesan-sukses-error.png)
 
 ---
 
 ## 6. HASIL PENGUJIAN FUNGSIONAL
-Seluruh pengujian dilakukan secara otomatis menggunakan rangkaian unit/feature testing PHPUnit pada Laravel 13 (`tests/Feature/JadwalCrudTest.php`) dengan total 11 skenario pengujian berstatus **100% PASS**:
+Seluruh pengujian dilakukan secara otomatis menggunakan rangkaian unit/feature testing PHPUnit pada Laravel 13 (`tests/Feature/JadwalCrudTest.php`) dengan total **13 skenario pengujian berstatus 100% PASS**:
 
 | No | Skenario Pengujian | Langkah Pengujian | Hasil yang Diharapkan | Hasil Nyata | Status |
 | :---: | :--- | :--- | :--- | :--- | :---: |
 | 1 | Pengalihan Root URL | Mengakses URL `GET /` | Dialihkan otomatis ke `route('jadwal.dashboard')` (HTTP 302). | Dialihkan ke `/dashboard` dengan kode status 302. | **PASS** |
 | 2 | Memuat Dashboard | Mengakses `GET /dashboard` | Halaman render sukses (200), menampilkan kartu total, aktif, dan hari ini. | Status 200, metrik terhitung langsung dari session. | **PASS** |
-| 3 | Empty State Daftar | Mengakses `GET /jadwal` saat session kosong | Menampilkan teks pemberitahuan "Belum ada jadwal yang sesuai filter". | Komponen empty state dan tautan tambah muncul. | **PASS** |
+| 3 | Empty State Daftar | Mengakses `GET /jadwal` saat session kosong | Menampilkan teks pemberitahuan "Belum ada jadwal yang sesuai filter.". | Komponen empty state dan tautan tambah muncul. | **PASS** |
 | 4 | Buka Form Tambah | Mengakses `GET /jadwal/create` | Formulir tambah muncul lengkap dengan seluruh input dan `@csrf`. | Status 200, form ter-render sempurna. | **PASS** |
 | 5 | Tambah Jadwal Sukses | Mengirim `POST /jadwal` dengan 11 atribut valid | Data tersimpan di session `jadwals[JDW001]`, redirect ke index dengan flash success. | Redirect ke `/jadwal`, session terisi, alert hijau muncul. | **PASS** |
 | 6 | Tolak Duplikasi Kode | Mengirim `POST /jadwal` dengan kode `JDW001` yang sudah ada | Sistem menolak simpan, kembali ke form tambah dengan pesan flash error. | Redirect kembali dengan pesan "Kode sudah digunakan". | **PASS** |
@@ -159,6 +179,8 @@ Seluruh pengujian dilakukan secara otomatis menggunakan rangkaian unit/feature t
 | 9 | Penanganan 404 Kode Tidak Ditemukan | Mengakses `GET /jadwal/JDW999` (kode fiktif) | Pengguna tidak mendapat error 500, melainkan dialihkan ke index dengan flash error. | Redirect ke `/jadwal` disertai alert merah tidak ditemukan. | **PASS** |
 | 10 | Pembaruan Jadwal | Mengirim `PUT /jadwal/JDW001` dengan perubahan data ruangan | Data pada session `jadwals[JDW001]` berubah, kode tetap utuh, redirect sukses. | Data session terbaharui, flash pesan sukses tampil. | **PASS** |
 | 11 | Penghapusan Jadwal | Mengirim `DELETE /jadwal/JDW001` | Entri kunci `JDW001` di-unset dari session array, redirect ke index. | Data terhapus dari session, tabel kembali kosong. | **PASS** |
+| 12 | Autentikasi Sesi BAAK | Mengakses `/login`, POST kredensial, dan POST `/logout` | Form login muncul, login menyimpan user di session, logout menghapus session. | Alur login/logout sukses 100%. | **PASS** |
+| 13 | Modul Ekstra Kampus | Mengakses `/dosen`, `/ruangan`, dan `/kelas` | Menampilkan agregasi dosen pengampu, alokasi ruangan, dan beban rombel kelas. | Status 200, seluruh data agregasi session muncul. | **PASS** |
 
 ---
 
