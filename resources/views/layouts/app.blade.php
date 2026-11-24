@@ -169,7 +169,19 @@
 
                     <!-- User Profile & Session Auth -->
                     <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-semibold text-xs shadow-sm">
+                        <div class="
+                        w-9 h-9
+                        rounded-full
+                        bg-gradient-to-tr
+                        from-indigo-600
+                        to-violet-500
+                        flex
+                        items-center
+                        justify-center
+                        text-white
+                        font-semibold
+                        text-xs
+                        shadow-sm">
                             RH
                         </div>
                         <div class="text-left hidden sm:block">
@@ -181,12 +193,32 @@
                         @if (session('is_logged_in'))
                             <form action="{{ route('logout') }}" method="POST" class="inline ml-1">
                                 @csrf
-                                <button type="submit" class="text-xs text-rose-600 hover:text-rose-700 font-medium px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors" title="Keluar Sesi">
+                                <button type="submit"
+                                class="
+                                text-xs
+                                text-rose-600
+                                hover:text-rose-700
+                                font-medium
+                                px-2
+                                py-1
+                                rounded-lg
+                                hover:bg-rose-50
+                                transition-colors"
+                                title="Keluar Sesi">
                                     Keluar
                                 </button>
                             </form>
                         @else
-                            <a href="{{ route('login') }}" class="text-xs text-indigo-600 hover:text-indigo-700 font-medium px-2 py-1 rounded-lg hover:bg-indigo-50 transition-colors">
+                            <a href="{{ route('login') }}"
+                            class="text-xs
+                            text-indigo-600
+                            hover:text-indigo-700
+                            font-medium
+                            px-2
+                            py-1
+                            rounded-lg
+                            hover:bg-indigo-50
+                            transition-colors">
                                 Masuk
                             </a>
                         @endif
@@ -198,10 +230,31 @@
             <main class="flex-1 p-8">
                 <!-- Flash Alerts (DaisyUI Alert Components) -->
                 @if (session('success'))
-                    <div role="alert" class="alert alert-success bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-2xl shadow-sm mb-6 flex items-center justify-between p-4">
+                    <div role="alert"
+                    class="alert
+                    alert-success
+                    bg-emerald-50 border
+                    border-emerald-200
+                    text-emerald-900
+                    rounded-2xl
+                    shadow-sm
+                    mb-6
+                    flex
+                    items-center
+                    justify-between
+                    p-4">
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg
+                            class="
+                            w-5
+                            h-5
+                            text-emerald-600
+                            shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span class="text-xs font-semibold">{{ session('success') }}</span>
                         </div>
@@ -209,10 +262,27 @@
                 @endif
 
                 @if (session('error'))
-                    <div role="alert" class="alert alert-error bg-rose-50 border border-rose-200 text-rose-900 rounded-2xl shadow-sm mb-6 flex items-center justify-between p-4">
+                    <div role="alert"
+                    class="
+                    alert
+                    alert-error
+                    bg-rose-50 border
+                    border-rose-200
+                    text-rose-900
+                    rounded-2xl
+                    shadow-sm
+                    mb-6
+                    flex
+                    items-center
+                    justify-between
+                    p-4">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span class="text-xs font-semibold">{{ session('error') }}</span>
                         </div>

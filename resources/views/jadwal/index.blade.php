@@ -14,11 +14,40 @@
         <div class="flex items-center gap-2 self-start sm:self-auto">
             <form action="{{ route('jadwal.reset') }}" method="POST" class="inline">
                 @csrf
-                <button type="submit" onclick="return confirm('Muat ulang 8 jadwal resmi perkuliahan UCIC?')" class="px-4 py-2.5 rounded-2xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" title="Reset & Muat 8 Data Resmi UCIC">
+                <button type="submit" onclick="return confirm('Muat ulang 8 jadwal resmi perkuliahan UCIC?')"
+                class="
+                px-4
+                py-2.5
+                rounded-2xl
+                border
+                border-slate-200
+                text-xs
+                font-semibold
+                text-slate-600
+                hover:bg-slate-50
+                hover:text-indigo-600
+                transition-colors"
+                title="Reset & Muat 8 Data Resmi UCIC">
                     Muat 8 Jadwal Resmi UCIC
                 </button>
             </form>
-            <a href="{{ route('jadwal.create') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-5 py-2.5 rounded-2xl shadow-lg shadow-indigo-200 transition-all duration-200 shrink-0">
+            <a href="{{ route('jadwal.create') }}"
+            class="inline-flex
+            items-center
+            gap-2
+            bg-indigo-600
+            hover:bg-indigo-700
+            text-white
+            font-medium
+            text-sm
+            px-5
+            py-2.5
+            rounded-2xl
+            shadow-lg
+            shadow-indigo-200
+            transition-all
+            duration-200
+            shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
